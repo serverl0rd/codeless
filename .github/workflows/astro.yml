@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages and Vercel
+name: Deploy to Vercel
 
 on:
   push:
@@ -9,26 +9,22 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: "pages"
+  group: "vercel-deploy"
   cancel-in-progress: true
 
 env:
   BUILD_PATH: "."
-  GITHUB_PAGES: true
-  SITE: https://serverl0rd.github.io
-  BASE: /codeless
+  NOTION_API_SECRET: ${{ secrets.NOTION_API_SECRET }}
+  DISQUS_SHORTNAME: ${{ secrets.DISQUS_SHORTNAME }}
 
 jobs:
-  build:
+  build_and_deploy:
     runs-on: ubuntu-latest
-    environment: github-pages
     timeout-minutes: 45
     steps:
-      - name: Checkout your repository using git
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Node
@@ -54,60 +50,8 @@ jobs:
         run: |
           echo "NOTION_API_SECRET = $NOTION_API_SECRET"
           echo "DISQUS_SHORTNAME = $DISQUS_SHORTNAME"
-          echo "GITHUB_PAGES = $GITHUB_PAGES"
-          echo "SITE = $SITE"
-          echo "BASE = $BASE"
           npx --no-install astro build
           npx --no-install pagefind --site dist
-        working-directory: ${{ env.BUILD_PATH }}
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: build
-          path: ${{ env.BUILD_PATH }}/dist
-
-  deploy_github_pages:
-    needs: build
-    runs-on: ubuntu-latest
-    name: Deploy to GitHub Pages
-    environment:
-      name: github-pages
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Download artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: build
-          path: dist
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
-
-  deploy_vercel:
-    needs: build
-    runs-on: ubuntu-latest
-    name: Deploy to Vercel
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 21
-
-      - name: Install dependencies
-        run: npm ci
-        working-directory: ${{ env.BUILD_PATH }}
-
-      - name: Build the project
-        run: npm run build
         working-directory: ${{ env.BUILD_PATH }}
 
       - name: Deploy to Vercel
@@ -115,11 +59,3 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: npx vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
         working-directory: ${{ env.BUILD_PATH }}
-
-  workflow-keepalive:
-    if: github.event_name == 'schedule'
-    runs-on: ubuntu-latest
-    permissions:
-      actions: write
-    steps:
-      - uses: liskin/gh-workflow-keepalive@v1
