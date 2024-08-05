@@ -7,31 +7,37 @@ const DISQUS_SHORTNAME = import.meta.env.DISQUS_SHORTNAME || process.env.DISQUS_
 // Extract theme colors from the configuration
 const theme = config.theme.colors;
 
-const isDarkTheme = localStorage.getItem("theme") === "light" ? false : true;
-const bgColor = isDarkTheme ? `rgb(${theme.bg.dark})` : `rgb(${theme.bg.light})`;
-const textColor = isDarkTheme ? `rgb(${theme.text.dark})` : `rgb(${theme.text.light})`;
-const linkColor = isDarkTheme ? `rgb(${theme.link.dark})` : `rgb(${theme.link.light})`;
+const isDarkTheme = false;
 ---
 
 <div id="disqus_thread"></div>
-<script>
+<script client:only>
     var disqus_config = function () {
         this.page.url = "{{ url }}";  
         this.page.identifier = "{{ title }}";
     };
-    
+
+    const isDarkTheme = window.localStorage.getItem("theme") === "light" ? false : true;
+    const bgColor = isDarkTheme ? `rgb(${theme.bg.dark})` : `rgb(${theme.bg.light})`;
+    const textColor = isDarkTheme ? `rgb(${theme.text.dark})` : `rgb(${theme.text.light})`;
+    const linkColor = isDarkTheme ? `rgb(${theme.link.dark})` : `rgb(${theme.link.light})`;
+
+    document.documentElement.style.setProperty('--disqus-bg-color', bgColor);
+    document.documentElement.style.setProperty('--disqus-text-color', textColor);
+    document.documentElement.style.setProperty('--disqus-link-color', linkColor);
+
     (function() {  
         var d = document, s = d.createElement('script');
-        s.src = `https://backlogpage.disqus.com/embed.js`;  
+        s.src = `https://${DISQUS_SHORTNAME}.disqus.com/embed.js`;  
         s.setAttribute('data-timestamp', +new Date());
         (d.head || d.body).appendChild(s);
     })();
 </script>
 <style>
   #disqus_thread {
-    --disqus-bg-color: {{ bgColor }};
-    --disqus-text-color: {{ textColor }};
-    --disqus-link-color: {{ linkColor }};
+    --disqus-bg-color: var(--bg-color);
+    --disqus-text-color: var(--text-color);
+    --disqus-link-color: var(--link-color);
   }
 
   #disqus_thread iframe {
