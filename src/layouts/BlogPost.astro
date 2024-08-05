@@ -6,10 +6,11 @@ import WebMentions from "@/components/blog/webmentions/index";
 
 import type { Post } from "src/lib/interfaces";
 import type { Heading } from "@/types";
-import PostComments from "@/components/blog/PostComments";
 import { REFERENCES } from "@/constants";
 import ReferencesSection from "@/components/blog/references/ReferencesSection.astro";
 import Icon from "@/components/Icon.astro";
+import PostComments from "@/components/blog/PostComments";
+const { title, url } = Astro.props;
 
 interface Props {
 	post: Post;
@@ -50,7 +51,7 @@ const articleDate = new Date(post.Date).toISOString();
 		<aside class="" data-pagefind-ignore="all">
 			<WebMentions />
 
-			<PostComments />
+			<PostComments title={title} url={url} />
 		</aside>
 	</div>
 	<button
