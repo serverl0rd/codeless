@@ -28,8 +28,23 @@ const isDarkTheme = false;
 
     (function() {  
         var d = document, s = d.createElement('script');
-        s.src = `https://${DISQUS_SHORTNAME}.disqus.com/embed.js`;  
+        s.src = `https://backlogpage.disqus.com/embed.js`;  
         s.setAttribute('data-timestamp', +new Date());
+
+        s.onload = function() {
+            var iframe = document.querySelector('iframe[src*="disqus.com/embed/comments/"]');
+            if (iframe) {
+                var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+                var style = document.createElement('style');
+                style.innerHTML = `
+                    body {
+                        color: black !important;
+                    }
+                `;
+                iframeDocument.head.appendChild(style);
+            }
+        };
+
         (d.head || d.body).appendChild(s);
     })();
 </script>
