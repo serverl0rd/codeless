@@ -1,27 +1,5 @@
-/*---
-const { title, url } = Astro.props;
-const DISQUS_SHORTNAME = import.meta.env.DISQUS_SHORTNAME || process.env.DISQUS_SHORTNAME || '';
 ---
-
-<div id="disqus_thread"></div>
-<script>
-    var disqus_config = function () {
-        this.page.url = "{{ url }}";  
-        this.page.identifier = "{{ title }}";
-    };
-    
-    (function() {  
-        var d = document, s = d.createElement('script');
-        s.src = `https://backlogpage.disqus.com/embed.js`;  
-        s.setAttribute('data-timestamp', +new Date());
-        (d.head || d.body).appendChild(s);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-
----*/
----
-import config from '../constants-config.json';
+import config from '../../../constants-config.json';
 
 const { title, url } = Astro.props;
 const DISQUS_SHORTNAME = import.meta.env.DISQUS_SHORTNAME || process.env.DISQUS_SHORTNAME || '';
@@ -44,7 +22,7 @@ const linkColor = isDarkTheme ? `rgb(${theme.link.dark})` : `rgb(${theme.link.li
     
     (function() {  
         var d = document, s = d.createElement('script');
-        s.src = `https://${DISQUS_SHORTNAME}.disqus.com/embed.js`;  
+        s.src = `https://backlogpage.disqus.com/embed.js`;  
         s.setAttribute('data-timestamp', +new Date());
         (d.head || d.body).appendChild(s);
     })();
@@ -73,4 +51,3 @@ const linkColor = isDarkTheme ? `rgb(${theme.link.dark})` : `rgb(${theme.link.li
   }
 </style>
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-
