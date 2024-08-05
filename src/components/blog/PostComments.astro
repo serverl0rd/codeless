@@ -12,7 +12,7 @@ const DISQUS_SHORTNAME = import.meta.env.DISQUS_SHORTNAME || process.env.DISQUS_
     
     (function() {  
         var d = document, s = d.createElement('script');
-        s.src = 'https://{{ DISQUS_SHORTNAME }}.disqus.com/embed.js';  
+        s.src = `https://${DISQUS_SHORTNAME}.disqus.com/embed.js`;  
         s.setAttribute('data-timestamp', +new Date());
         (d.head || d.body).appendChild(s);
     })();
