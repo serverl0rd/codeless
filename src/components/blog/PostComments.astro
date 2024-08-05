@@ -7,7 +7,7 @@ const DISQUS_SHORTNAME = import.meta.env.DISQUS_SHORTNAME || process.env.DISQUS_
 // Extract theme colors from the configuration
 const theme = config.theme.colors;
 
-const isDarkTheme = true; // Set this based on your site's theme
+const isDarkTheme = false; // Set this based on your site's theme
 const bgColor = isDarkTheme ? `rgb(${theme.bg.dark})` : `rgb(${theme.bg.light})`;
 const textColor = isDarkTheme ? `rgb(${theme.text.dark})` : `rgb(${theme.text.light})`;
 const linkColor = isDarkTheme ? `rgb(${theme.link.dark})` : `rgb(${theme.link.light})`;
