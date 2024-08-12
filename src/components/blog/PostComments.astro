@@ -7,31 +7,65 @@ const DISQUS_SHORTNAME = import.meta.env.DISQUS_SHORTNAME || process.env.DISQUS_
 // Extract theme colors from the configuration
 const theme = config.theme.colors;
 
-const isDarkTheme = false; // Set this based on your site's theme
-const bgColor = isDarkTheme ? `rgb(${theme.bg.dark})` : `rgb(${theme.bg.light})`;
-const textColor = isDarkTheme ? `rgb(${theme.text.dark})` : `rgb(${theme.text.light})`;
-const linkColor = isDarkTheme ? `rgb(${theme.link.dark})` : `rgb(${theme.link.light})`;
+const isDarkTheme = false;
 ---
 
 <div id="disqus_thread"></div>
-<script>
+<script client:only>
     var disqus_config = function () {
         this.page.url = "{{ url }}";  
         this.page.identifier = "{{ title }}";
     };
-    
+
+    const injectCSS = (iframe, css) => {
+        const style = document.createElement('style');
+        style.innerHTML = css;
+        iframe.contentDocument.head.appendChild(style);
+    };
+
+    const applyTheme = () => {
+        const isDarkTheme = window.localStorage.getItem("theme") === "light" ? false : true;
+        const bgColor = isDarkTheme ? `rgb(${theme.bg.dark})` : `rgb(${theme.bg.light})`;
+        const textColor = isDarkTheme ? `rgb(${theme.text.dark})` : `rgb(${theme.text.light})`;
+        const linkColor = isDarkTheme ? `rgb(${theme.link.dark})` : `rgb(${theme.link.light})`;
+        
+        const css = `
+            body {
+                background-color: ${bgColor} !important;
+                color: ${textColor} !important;
+            }
+            a {
+                color: ${linkColor} !important;
+            }
+            .comment-body {
+                color: ${textColor} !important;
+            }
+        `;
+        
+        const iframe = document.querySelector('iframe[src*="disqus.com/embed/comments/"]');
+        if (iframe) {
+            injectCSS(iframe, css);
+        }
+    };
+
     (function() {  
         var d = document, s = d.createElement('script');
-        s.src = `https://backlogpage.disqus.com/embed.js`;  
+        s.src = `https://${DISQUS_SHORTNAME}.disqus.com/embed.js`;  
         s.setAttribute('data-timestamp', +new Date());
+
+        s.onload = applyTheme;
         (d.head || d.body).appendChild(s);
     })();
+
+    // Apply theme when storage changes
+    window.addEventListener('storage', applyTheme);
 </script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 <style>
   #disqus_thread {
-    --disqus-bg-color: {{ bgColor }};
-    --disqus-text-color: {{ textColor }};
-    --disqus-link-color: {{ linkColor }};
+    --disqus-bg-color: var(--bg-color);
+    --disqus-text-color: var(--text-color);
+    --disqus-link-color: var(--link-color);
   }
 
   #disqus_thread iframe {
@@ -50,4 +84,3 @@ const linkColor = isDarkTheme ? `rgb(${theme.link.dark})` : `rgb(${theme.link.li
     color: var(--disqus-link-color);
   }
 </style>
-<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
