@@ -14,9 +14,11 @@ export async function getStaticPaths() {
 		props: { post },
 	}));
 }
+
 interface Props {
 	post: Post;
 }
+
 const { post } = Astro.props;
 let postFound = true;
 let headings = null;
@@ -24,7 +26,7 @@ let blocks = null;
 let referencesInPage = null;
 
 if (!post) {
-	console.log("Post not found. slug: ${slug}");
+	console.log(`Post not found. slug: ${post?.Slug}`);
 	postFound = false;
 }
 
@@ -54,12 +56,28 @@ if (postFound) {
 }
 ---
 
-{
-	postFound && resetFirstImage() && (
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>{post ? post.Title : 'Post Not Found'}</title>
+	<!-- Add other meta tags and links here -->
+</head>
+<body>
+	{postFound && resetFirstImage() && (
 		<PostLayout post={post} headings={headings}>
 			<div class="post-body screen:max-w-[708px] print:w-full">
 				<NotionBlocks blocks={blocks} isRoot={true} />
 			</div>
 		</PostLayout>
-	)
-}
+	)}
+
+	<!-- Chirpy.dev Comment Widget -->
+	{postFound && (
+		<div data-chirpy-theme="system" data-chirpy-comment="true" id="chirpy-comment"></div>
+	)}
+
+	<!-- Add the Chirpy.dev bootstrapper script -->
+	<script defer src="https://chirpy.dev/bootstrapper.js" data-chirpy-domain="codelessblog.vercel.app"></script>
+</body>
+</html>
