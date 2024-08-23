@@ -106,6 +106,3 @@ const TRANSFORMER_FUNCTIONS_ARR = [
 ];
 
 export { TRANSFORMER_FUNCTIONS_ARR };
-
-// Disqus configuration
-export const DISQUS_SHORTNAME = import.meta.env.DISQUS_SHORTNAME || process.env.DISQUS_SHORTNAME || '';
