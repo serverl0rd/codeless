@@ -1,44 +1,51 @@
 <div align="center">
-  <img alt="Webtrotion Cat" src="https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog/assets/125716950/b8206c1e-7c27-46d5-b192-850699117c8b" width="70" />
+  <img alt="Codeless Logo" src="https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog/assets/125716950/b8206c1e-7c27-46d5-b192-850699117c8b" width="70" />
 </div>
 <h1 align="center">
-  Webtrotion
+  Codeless
 </h1>
 
 <p align="center">
-  <strong>A Notion-powered static site generator built with Astro</strong>
+  <strong>Your go-to resource for no-code tools, platforms, and technologies</strong>
 </p>
 
 <p align="center">
+  <a href="https://codelessblog.vercel.app/">Live Site</a> •
+  <a href="https://codelessblog.vercel.app/about-us">About</a> •
   <a href="#features">Features</a> •
   <a href="#quick-start">Quick Start</a> •
-  <a href="#configuration">Configuration</a> •
-  <a href="#deployment">Deployment</a> •
   <a href="#license">License</a>
 </p>
 
 ---
 
-## About This Fork
+## About Codeless
 
-This project is a fork of the original [Webtrotion](https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog) created by [nerdymomocat](https://github.com/nerdymomocat-templates). Full credit goes to the original author for creating this excellent Notion-to-website solution.
+**Codeless** is a comprehensive resource dedicated to no-code tools, platforms, and technologies. We aim to empower individuals and businesses by demystifying the rapidly growing field of no-code development.
 
-**Original Repository:** [nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog](https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog)
+We believe that **anyone can create, innovate, and bring their ideas to life—no coding experience required.**
 
-If you find this project useful, please consider [supporting the original creator](https://ko-fi.com/nerdymomocat).
+### What We Offer
+
+- In-depth reviews of no-code tools and platforms
+- Comprehensive guides and tutorials
+- Latest news and updates in the no-code ecosystem
+- Step-by-step instructions for building, automating, and innovating without code
+
+**Built by [@serverl0rd](https://github.com/serverl0rd) (Atharva Kulkarni)**
 
 ---
 
-## What is Webtrotion?
+## Tech Stack
 
-Webtrotion transforms your Notion database into a fully-featured static website or blog. Write your content in Notion's familiar WYSIWYG editor, and Webtrotion handles the rest—generating a fast, SEO-friendly static site that can be hosted for free on GitHub Pages, Vercel, or Netlify.
+This site is powered by [Webtrotion](https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog) — a Notion-powered static site generator built with Astro. Content is managed in Notion and automatically rendered as a fast, SEO-friendly static site.
 
 ### Why Notion + Astro?
 
-- **Notion as CMS**: No need to learn a new content management system. Use Notion's powerful editor with blocks, databases, and collaboration features you already know.
-- **Astro for Performance**: Static site generation means lightning-fast page loads and excellent SEO out of the box.
-- **Free Hosting**: Deploy to GitHub Pages with zero cost, or use Vercel/Netlify for more advanced needs.
-- **Single Configuration File**: One JSON file controls your entire site—colors, fonts, features, and more.
+- **Notion as CMS**: Use Notion's powerful WYSIWYG editor with blocks, databases, and collaboration features
+- **Astro for Performance**: Static site generation means lightning-fast page loads and excellent SEO
+- **Free Hosting**: Deployed on Vercel with zero cost
+- **Single Configuration File**: One JSON file controls the entire site
 
 ---
 
@@ -53,9 +60,6 @@ Webtrotion transforms your Notion database into a fully-featured static website 
 - **Syntax Highlighting** — Code blocks with Shiki transformers
 - **Math & Diagrams** — KaTeX for equations, Mermaid for diagrams
 - **Related Content** — Automatic backlinks and related posts
-- **Pinned Posts** — Highlight important content at the top
-- **Webmentions** — IndieWeb support via webmention.io
-- **Wikipedia-style Popovers** — Preview links on hover
 - **Responsive Design** — Mobile-first with TailwindCSS
 
 ---
@@ -92,7 +96,6 @@ Edit `constants-config.json` to customize your site:
 - `author`: Your name (used in metadata and OG images)
 - `socials`: Your social media links
 - `theme`: Light and dark mode colors
-- `chirpy`: Chirpy comment widget (configured in code)
 
 ### 4. Local Development
 
@@ -111,58 +114,19 @@ Your site will be available at `http://localhost:4321`
 
 ---
 
-## Configuration
-
-All site configuration lives in `constants-config.json`. Key options include:
-
-| Option | Description |
-|--------|-------------|
-| `database-id` | Your Notion database ID |
-| `author` | Author name for metadata |
-| `socials` | Social media links (email, GitHub, Twitter, etc.) |
-| `theme` | Light/dark mode color palettes |
-| `webmention` | Webmention.io configuration |
-| `menu-pages-collection` | Collection name for static pages vs blog posts |
-| `number-of-posts-per-page` | Pagination setting |
-| `enable-lightbox` | Click-to-expand images |
-| `references` | Related content and backlink settings |
-
----
-
-## Notion Database Properties
-
-| Property | Purpose |
-|----------|---------|
-| `Page` | Title of the post/page |
-| `Tags` | Post categorization |
-| `Excerpt` | Description for SEO and RSS |
-| `Collection` | Categorize as page or blog post |
-| `Published` | Toggle to publish content |
-| `FeaturedImage` | Image for Open Graph cards |
-| `Specific Slug` | Custom URL slug |
-| `Explicit Publish Date` | Override creation date |
-| `Rank` | Order pages in navigation |
-| `Pinned` | Pin post to top of listings |
-
-> **Note**: Content is only published when `Published` is checked AND the publish date is in the past (or empty).
-
----
-
 ## Deployment
 
-### GitHub Pages (Free)
-
-1. Go to repository **Settings → Pages → Source** and select **GitHub Actions**
-2. Add `NOTION_API_SECRET` to **Settings → Secrets → Actions**
-3. Push to `main` branch or manually trigger the workflow
-
-Your site will be live at `https://username.github.io/repo-name`
-
-### Vercel
+### Vercel (Recommended)
 
 1. Import your repository on [Vercel](https://vercel.com)
 2. Add `NOTION_API_SECRET` environment variable
 3. Deploy
+
+### GitHub Pages
+
+1. Go to repository **Settings → Pages → Source** and select **GitHub Actions**
+2. Add `NOTION_API_SECRET` to **Settings → Secrets → Actions**
+3. Push to `main` branch or manually trigger the workflow
 
 ### Netlify
 
@@ -186,16 +150,6 @@ pnpm check        # TypeScript type checking
 
 ---
 
-## Acknowledgements
-
-This project builds upon the work of:
-
-- [nerdymomocat](https://github.com/nerdymomocat-templates) — Original Webtrotion creator
-- [Astro Cactus](https://github.com/chrismwilliams/astro-theme-cactus) — Theme foundation
-- [astro-notion-blog](https://github.com/otoyo/astro-notion-blog) — Notion integration patterns
-
----
-
 ## License
 
 MIT License — See [LICENSE](LICENSE) for details.
@@ -203,5 +157,14 @@ MIT License — See [LICENSE](LICENSE) for details.
 ---
 
 <p align="center">
-  <sub>Built with <a href="https://astro.build/">Astro</a> and <a href="https://notion.so/">Notion</a></sub>
+  <sub>
+    Powered by <a href="https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog">Webtrotion</a>
+    · Created by <a href="https://github.com/nerdymomocat-templates">nerdymomocat</a>
+    · Built with <a href="https://astro.build/">Astro</a> and <a href="https://notion.so/">Notion</a>
+  </sub>
+</p>
+<p align="center">
+  <sub>
+    <a href="https://ko-fi.com/nerdymomocat">Support the original Webtrotion creator</a>
+  </sub>
 </p>
