@@ -32,7 +32,7 @@ We believe that **anyone can create, innovate, and bring their ideas to life—n
 - Latest news and updates in the no-code ecosystem
 - Step-by-step instructions for building, automating, and innovating without code
 
-**Built by [@serverl0rd](https://github.com/serverl0rd) (Atharva Kulkarni)**
+**Built by [@serverl0rd](https://serverlord.in) ([Atharva Kulkarni](https://atharvakulkarni.link))**
 
 ---
 
