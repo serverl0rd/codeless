@@ -1,5 +1,5 @@
 <div align="center">
-  <img alt="Codeless Logo" src="https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog/assets/125716950/b8206c1e-7c27-46d5-b192-850699117c8b" width="70" />
+  <img alt="Codeless Logo" src="https://codelessblog.vercel.app/notion/62855f68-a53e-4ff1-ae33-2011b5a41035/Big_Logo-removebg-preview.png" width="150" />
 </div>
 <h1 align="center">
   Codeless
