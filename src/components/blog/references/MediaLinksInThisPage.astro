@@ -9,13 +9,12 @@ interface Props {
 }
 const { post, filteredReferencesInPage } = Astro.props;
 
-const groupedReferences: { [key: string]: { block: Block; dml: string }[] } =
-	filteredReferencesInPage.reduce((acc, ref) => {
+type MediaRefGroup = { block: Block; dml: string }[];
+const groupedReferences: Record<string, MediaRefGroup> = filteredReferencesInPage.reduce(
+	(acc: Record<string, MediaRefGroup>, ref) => {
 		// Group by direct_nonmedia_link and collect Block objects
 		if (ref.direct_media_link) {
-			// const key = ref.direct_media_link;
-			let key = null;
-			key = ref.block.Video
+			const key = ref.block.Video
 				? "Videos"
 				: ref.block.NImage
 					? "Images"
@@ -26,14 +25,19 @@ const groupedReferences: { [key: string]: { block: Block; dml: string }[] } =
 			acc[key].push({ block: ref.block, dml: ref.direct_media_link });
 		}
 		return acc;
-	}, {});
+	},
+	{} as Record<string, MediaRefGroup>,
+);
 
-const blockIdLinks = {};
+const blockIdLinks: Record<string, string | null> = {};
 if (groupedReferences) {
 	for (const dmltype of Object.keys(groupedReferences)) {
-		for (const blockdml of groupedReferences[dmltype]) {
-			const result = await getReferenceLink(post.PageId, undefined, blockdml.block, true);
-			blockIdLinks[blockdml.block.Id] = result[0];
+		const blockdmls = groupedReferences[dmltype];
+		if (blockdmls) {
+			for (const blockdml of blockdmls) {
+				const result = await getReferenceLink(post.PageId, undefined, blockdml.block, true);
+				blockIdLinks[blockdml.block.Id] = result[0];
+			}
 		}
 	}
 }
@@ -47,7 +51,7 @@ if (groupedReferences) {
 			<div>
 				<span class="font-semibold">Media & Files On This Page</span>
 				{Object.entries(groupedReferences).map(([dmltype, blockdmls]) => (
-					<div class="ml-2" key={dmltype}>
+					<div class="ml-2">
 						<div class="inline-block">
 							{REFERENCES && REFERENCES["popovers"] ? (
 								<>
@@ -56,7 +60,7 @@ if (groupedReferences) {
 										<>
 											<NBlocksPopover
 												block={blockdml.block}
-												linkedTo={blockIdLinks[blockdml.block.Id]}
+												linkedTo={blockIdLinks[blockdml.block.Id] || "#"}
 												popoverSpanText={`[${index + 1}]`}
 												font={"font-mono"}
 											/>{" "}
@@ -67,7 +71,7 @@ if (groupedReferences) {
 								<>
 									<span class="italic">{dmltype}</span> {" at "}
 									{blockdmls.map((blockdml, index) => (
-										<a href={blockIdLinks[blockdml.block.Id]} class="font-mono text-link">
+										<a href={blockIdLinks[blockdml.block.Id] || "#"} class="font-mono text-link">
 											{`[${index + 1}]`}
 										</a>
 									))}

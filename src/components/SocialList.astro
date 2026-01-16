@@ -4,15 +4,21 @@ import { getTextToSVGPath } from "@/lib/style-helpers";
 import { SOCIALS } from "@/constants";
 import type { SocialLink } from "@/types";
 
+const friendlyNameMap: { [key: string]: string } = {
+	portfolio: "Portfolio",
+	links: "Links",
+};
+
 const mapSocialLinks = (socialLinksObject: { [key: string]: string }): SocialLink[] => {
 	return Object.entries(socialLinksObject)
 		.map(([key, value]): SocialLink => {
 			let iconname = getTextToSVGPath(key) ? key : "web";
 			// let iconname = getTextToIconName(key) ? getTextToIconName(key) : "mdi:web";
+			const friendlyName = friendlyNameMap[key] || key.charAt(0).toUpperCase() + key.slice(1);
 			if (key === "email") {
 				return {
 					name: iconname,
-					friendlyName: key.charAt(0).toUpperCase() + key.slice(1),
+					friendlyName,
 					link: value.startsWith("mailto:") ? value.replace("mailto:", "") : value,
 					isWebmention: true,
 				};
@@ -20,7 +26,7 @@ const mapSocialLinks = (socialLinksObject: { [key: string]: string }): SocialLin
 
 			return {
 				name: iconname,
-				friendlyName: key.charAt(0).toUpperCase() + key.slice(1),
+				friendlyName,
 				link: value,
 			};
 		})
@@ -30,20 +36,22 @@ const mapSocialLinks = (socialLinksObject: { [key: string]: string }): SocialLin
 const socialLinks = mapSocialLinks(SOCIALS);
 ---
 
-<script>
+<script is:inline>
 	function copyToClipboard(text) {
 		navigator.clipboard
 			.writeText(text)
-			.then(() => {
-				const toast = document.getElementById("toast");
-				toast.classList.remove("opacity-0");
-				toast.classList.add("opacity-100");
-				setTimeout(() => {
-					toast.classList.remove("opacity-100");
-					toast.classList.add("opacity-0");
-				}, 3000);
+			.then(function () {
+				var toast = document.getElementById("toast");
+				if (toast) {
+					toast.classList.remove("opacity-0");
+					toast.classList.add("opacity-100");
+					setTimeout(function () {
+						toast.classList.remove("opacity-100");
+						toast.classList.add("opacity-0");
+					}, 3000);
+				}
 			})
-			.catch((err) => {
+			.catch(function (err) {
 				console.error("Could not copy text: ", err);
 			});
 	}
@@ -53,11 +61,11 @@ const socialLinks = mapSocialLinks(SOCIALS);
 		copyToClipboard(email);
 	}
 
-	document.addEventListener("DOMContentLoaded", () => {
-		const emailLinks = document.querySelectorAll(".email-link");
-		emailLinks.forEach((link) => {
-			link.addEventListener("click", (event) => {
-				const email = link.getAttribute("data-email");
+	document.addEventListener("DOMContentLoaded", function () {
+		var emailLinks = document.querySelectorAll(".email-link");
+		emailLinks.forEach(function (link) {
+			link.addEventListener("click", function (event) {
+				var email = link.getAttribute("data-email");
 				handleEmailClick(event, email);
 			});
 		});
@@ -70,7 +78,7 @@ const socialLinks = mapSocialLinks(SOCIALS);
 			<div class="flex flex-wrap items-center gap-x-4 print:hidden">
 				<p>Find me on</p>
 				<ul class="flex flex-1 items-center gap-x-2 sm:flex-initial">
-					{socialLinks.map(({ link, name, friendlyName, isWebmention }) => (
+					{socialLinks.map(({ link, name: iconName, friendlyName, isWebmention }) => (
 						<li class="flex">
 							{friendlyName === "Email" ? (
 								<a
@@ -79,7 +87,7 @@ const socialLinks = mapSocialLinks(SOCIALS);
 									data-email={link}
 									rel={`noopener noreferrer ${isWebmention ? "me authn" : ""}`}
 								>
-									<Icon class="h-6 w-6" name={name} aria-label={friendlyName} focusable="false" />
+									<Icon class="h-6 w-6" name={iconName} aria-label={friendlyName} focusable="false" />
 									<span class="sr-only">{friendlyName}</span>
 								</a>
 							) : (
@@ -89,7 +97,7 @@ const socialLinks = mapSocialLinks(SOCIALS);
 									target="_blank"
 									rel={`noopener noreferrer ${isWebmention ? "me authn" : ""}`}
 								>
-									<Icon class="h-6 w-6" name={name} aria-label={friendlyName} focusable="false" />
+									<Icon class="h-6 w-6" name={iconName} aria-label={friendlyName} focusable="false" />
 									<span class="sr-only">{friendlyName}</span>
 								</a>
 							)}
@@ -107,7 +115,7 @@ const socialLinks = mapSocialLinks(SOCIALS);
 				<hr class="mb-4" />
 				<p class="text-left font-bold">Find me on:</p>
 				<ul>
-					{socialLinks.map(({ link, name, friendlyName, isWebmention }) => (
+					{socialLinks.map(({ link, friendlyName }) => (
 						<li class="flex">
 							<p class="text-left">
 								{friendlyName}: {link}

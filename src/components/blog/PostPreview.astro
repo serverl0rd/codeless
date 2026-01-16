@@ -3,14 +3,14 @@
 // import type { HTMLTag, Polymorphic } from "astro/types";
 import type { HTMLTag } from "astro/types";
 import FormattedDate from "../FormattedDate.astro";
-import type { Post } from "src/lib/interfaces";
+import type { Post, SelectProperty } from "src/lib/interfaces";
 import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
 import { getNavLink, getPostLink } from "@/lib/blog-helpers";
 import { MENU_PAGES_COLLECTION } from "@/constants";
 import Icon from "@/components/Icon";
 import { slugify } from "@/utils";
 
-interface Props {
+export interface Props {
 	post: Post;
 	as?: HTMLTag;
 	withDesc?: boolean;
@@ -48,7 +48,7 @@ const postLink = getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTIO
 				aria-hidden="true"
 				focusable="false"
 			/>
-			{post.Tags.map((tag, i) => (
+			{post.Tags.map((tag: SelectProperty) => (
 				<>
 					<a
 						class={`inline-block rounded-md text-sm ${getNotionColorToTailwindColor(

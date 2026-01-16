@@ -9,8 +9,8 @@ interface Props {
 	filteredReferencesInPage: ReferencesInPage[];
 }
 const { post, filteredReferencesInPage } = Astro.props;
-const groupedReferences: { [key: string]: Block[] } = filteredReferencesInPage.reduce(
-	(acc, ref) => {
+const groupedReferences: Record<string, Block[]> = filteredReferencesInPage.reduce(
+	(acc: Record<string, Block[]>, ref) => {
 		// Group by direct_nonmedia_link and collect Block objects
 		if (ref.link_to_pageid) {
 			const key = ref.link_to_pageid;
@@ -33,11 +33,11 @@ const groupedReferences: { [key: string]: Block[] } = filteredReferencesInPage.r
 
 		return acc;
 	},
-	{},
+	{} as Record<string, Block[]>,
 );
 
-const entryIdLinksEntry = {};
-const blockIdLinks = {};
+const entryIdLinksEntry: Record<string, [string | null, Post | null]> = {};
+const blockIdLinks: Record<string, string | null> = {};
 const entryIdsToDel: string[] = [];
 
 if (groupedReferences) {
@@ -48,9 +48,12 @@ if (groupedReferences) {
 			continue;
 		}
 		entryIdLinksEntry[entryId] = res_entry;
-		for (const block of groupedReferences[entryId]) {
-			const result = await getReferenceLink(post.PageId, undefined, block, true);
-			blockIdLinks[block.Id] = result[0];
+		const blocks = groupedReferences[entryId];
+		if (blocks) {
+			for (const block of blocks) {
+				const result = await getReferenceLink(post.PageId, undefined, block, true);
+				blockIdLinks[block.Id] = result[0];
+			}
 		}
 	}
 }
@@ -64,45 +67,51 @@ entryIdsToDel.forEach((entryId) => {
 		<>
 			<div>
 				<span class="font-semibold">Other Pages Mentioned On This Page</span>
-				{Object.entries(groupedReferences).map(([entryId, blocks]) => (
-					<div class="ml-2" key={entryId}>
-						<div class="inline-block">
-							{REFERENCES && REFERENCES["popovers"] ? (
-								<>
-									<NPagePopover
-										linkedTo={entryIdLinksEntry[entryId][0]}
-										popoverSpanText={entryIdLinksEntry[entryId][1].Title}
-										popoverTitle={entryIdLinksEntry[entryId][1].Title}
-										postId={entryId}
-										excerpt={entryIdLinksEntry[entryId][1].Excerpt}
-									/>
-									{" at "}
-									{blocks.map((block, index) => (
-										<NBlocksPopover
-											key={block.Id}
-											block={block}
-											linkedTo={blockIdLinks[block.Id]}
-											popoverSpanText={`[${index + 1}]`}
-											font={"font-mono"}
+				{Object.entries(groupedReferences).map(([entryId, blocks]) => {
+					const entryLinks = entryIdLinksEntry[entryId];
+					const entryUrl = entryLinks?.[0] || "#";
+					const entryPost = entryLinks?.[1];
+					const entryTitle = entryPost?.Title || entryId;
+					const entryExcerpt = entryPost?.Excerpt || "";
+					return (
+						<div class="ml-2">
+							<div class="inline-block">
+								{REFERENCES && REFERENCES["popovers"] ? (
+									<>
+										<NPagePopover
+											linkedTo={entryUrl}
+											popoverSpanText={entryTitle}
+											popoverTitle={entryTitle}
+											postId={entryId}
+											excerpt={entryExcerpt}
 										/>
-									))}
-								</>
-							) : (
-								<>
-									<a href={entryIdLinksEntry[entryId][0]} class="text-link">
-										{entryIdLinksEntry[entryId][1].Title}{" "}
-									</a>
-									{" at "}
-									{blocks.map((block, index) => (
-										<a href={blockIdLinks[block.Id]} class="font-mono text-link">
-											{`[${index + 1}]`}{" "}
+										{" at "}
+										{blocks.map((block, index) => (
+											<NBlocksPopover
+												block={block}
+												linkedTo={blockIdLinks[block.Id] || "#"}
+												popoverSpanText={`[${index + 1}]`}
+												font={"font-mono"}
+											/>
+										))}
+									</>
+								) : (
+									<>
+										<a href={entryUrl} class="text-link">
+											{entryTitle}{" "}
 										</a>
-									))}
-								</>
-							)}
+										{" at "}
+										{blocks.map((block, index) => (
+											<a href={blockIdLinks[block.Id] || "#"} class="font-mono text-link">
+												{`[${index + 1}]`}{" "}
+											</a>
+										))}
+									</>
+								)}
+							</div>
 						</div>
-					</div>
-				))}
+					);
+				})}
 			</div>
 			<br />
 		</>

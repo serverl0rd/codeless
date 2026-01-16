@@ -45,9 +45,9 @@ const toc = generateToc(headings);
 		aria-hidden="true"
 	/>
 </button>
-<script>
-	document.addEventListener("DOMContentLoaded", () => {
-		const tocContainer = document.querySelector(".toc-container");
+<script is:inline>
+	document.addEventListener("DOMContentLoaded", function () {
+		var tocContainer = document.querySelector(".toc-container");
 		const tocContent = document.querySelector(".toc-content");
 		const visualContainer = tocContainer?.querySelector(".visual-container");
 		const bottomTocButton = document.getElementById("show-bottom-toc");
@@ -180,7 +180,9 @@ const toc = generateToc(headings);
 		tocLinks.forEach((link) => {
 			link.addEventListener("click", (event) => {
 				event.preventDefault();
-				const targetId = link.getAttribute("href").substring(1);
+				const href = link.getAttribute("href");
+				if (!href) return;
+				const targetId = href.substring(1);
 				const targetHeading = document.getElementById(targetId);
 
 				if (targetHeading) {

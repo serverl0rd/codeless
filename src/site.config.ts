@@ -4,9 +4,7 @@ import type { SiteConfig } from "@/types";
 import { AUTHOR, WEBMENTION_LINK, HOME_PAGE_SLUG } from "./constants";
 
 const tl = "",
-	ds = "",
-	path = "/",
-	oim = "";
+	ds = "";
 const database = await getDatabase();
 
 const siteTitle = tl ? `${tl} - ${database.Title}` : database.Title;

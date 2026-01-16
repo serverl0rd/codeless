@@ -21,19 +21,22 @@ export { slugify } from "./slugify";
 export async function getCollections() {
 	const { propertiesRaw } = await getDatabase();
 
-	return propertiesRaw.Collection.select!.options.map(({ name }) => name).filter(
+	return propertiesRaw.Collection?.select?.options.map(({ name }) => name).filter(
 		(name) => name !== MENU_PAGES_COLLECTION,
-	);
+	) ?? [];
 }
 
 export async function getTagsNameWDesc() {
 	const { propertiesRaw } = await getDatabase();
 	const options = propertiesRaw.Tags?.multi_select?.options || [];
 
-	const mappedOptions = options.reduce((acc, option) => {
-		acc[option.name] = option.description || "";
-		return acc;
-	}, {});
+	const mappedOptions = options.reduce(
+		(acc: Record<string, string>, option) => {
+			acc[option.name] = option.description || "";
+			return acc;
+		},
+		{} as Record<string, string>,
+	);
 
 	return mappedOptions;
 }
@@ -41,9 +44,9 @@ export async function getTagsNameWDesc() {
 export async function getCollectionsWDesc() {
 	const { propertiesRaw } = await getDatabase();
 
-	return propertiesRaw.Collection.select!.options.filter(
+	return propertiesRaw.Collection?.select?.options.filter(
 		({ name }) => name !== MENU_PAGES_COLLECTION,
-	).map(({ name, description }) => ({ name, description }));
+	).map(({ name, description }) => ({ name, description })) ?? [];
 }
 
 export async function getMenu(): Promise<

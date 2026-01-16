@@ -3,7 +3,7 @@
 // import type { HTMLTag, Polymorphic } from "astro/types";
 import type { HTMLTag } from "astro/types";
 import FormattedDate from "../FormattedDate.astro";
-import type { Post } from "src/lib/interfaces";
+import type { Post, SelectProperty } from "src/lib/interfaces";
 import { getPostContentByPostId, processFileBlocks } from "@/lib/notion/client";
 import { extractTargetBlocks, getNavLink, getPostLink } from "@/lib/blog-helpers";
 import NotionBlocks from "src/components/NotionBlocks.astro";
@@ -17,14 +17,14 @@ import { slugify } from "@/utils";
 // 	withDesc?: boolean;
 // };
 
-interface Props {
+export interface Props {
 	post_full_preview: Post;
 	as?: HTMLTag;
 	withDesc?: boolean;
 }
 
 const { post_full_preview, as: Tag = "div", withDesc = false } = Astro.props;
-const { blocks, referencesInPage } = await getPostContentByPostId(post_full_preview);
+const { blocks } = await getPostContentByPostId(post_full_preview);
 const fileAtacchedBlocks = extractTargetBlocks(["image", "video", "file", "audio"], blocks).filter(
 	(block) => {
 		if (!block) {
@@ -39,7 +39,8 @@ const fileAtacchedBlocks = extractTargetBlocks(["image", "video", "file", "audio
 	},
 );
 
-const processedFile = await processFileBlocks(fileAtacchedBlocks);
+// Process file blocks for potential future use
+await processFileBlocks(fileAtacchedBlocks);
 
 const postLink = getPostLink(
 	post_full_preview.Slug,
@@ -83,7 +84,7 @@ const postLink = getPostLink(
 				aria-hidden="true"
 				focusable="false"
 			/>
-			{post_full_preview.Tags.map((tag, i) => (
+			{post_full_preview.Tags.map((tag: SelectProperty) => (
 				<>
 					<a
 						class={`inline-block rounded-md text-sm ${getNotionColorToTailwindColor(

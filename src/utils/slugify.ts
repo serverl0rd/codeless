@@ -1943,14 +1943,18 @@ const defaultReplacements = [
 	["°", "degrees"],
 ];
 
-function escapeRegExp(string) {
+function escapeRegExp(string: string): string {
 	if (typeof string !== "string") {
 		throw new TypeError("Expected a string");
 	}
 	return string.replace(/[|\\{}()[\]^$+*?.]/g, "\\$&").replace(/-/g, "\\x2d");
 }
 
-export function slugify(string, replacements = defaultReplacements, separator = "-") {
+export function slugify(
+	string: string,
+	replacements: [string, string][] = defaultReplacements,
+	separator: string = "-",
+): string {
 	try {
 		let slug = string.toString().trim();
 
@@ -1980,6 +1984,6 @@ export function slugify(string, replacements = defaultReplacements, separator = 
 
 		return slug;
 	} catch (error) {
-		throw new Error(`Error in slugify: ${error.message}`);
+		throw new Error(`Error in slugify: ${error instanceof Error ? error.message : String(error)}`);
 	}
 }

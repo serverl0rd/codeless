@@ -31,12 +31,12 @@ export function generateToc(headings: ReadonlyArray<MarkdownHeading>) {
 		if (heading.depth === 1) {
 			toc.push(heading);
 		} else {
-			const lastItemInToc = toc ? toc[toc.length - 1]! : null;
+			const lastItemInToc = toc.length > 0 ? toc[toc.length - 1] : null;
 			if (!lastItemInToc || heading.depth < lastItemInToc.depth) {
 				console.log(`Orphan heading found: ${heading.text}.`);
 				ignore = true;
 			}
-			if (!ignore) {
+			if (!ignore && lastItemInToc) {
 				const gap = heading.depth - lastItemInToc.depth;
 				const target = diveChildren(lastItemInToc, gap);
 				target.push(heading);

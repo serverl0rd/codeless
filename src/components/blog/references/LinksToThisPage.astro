@@ -8,23 +8,29 @@ interface Props {
 	allReferencesToPage: { entryId: string; block: Block }[];
 }
 const { post, allReferencesToPage } = Astro.props;
-const groupedReferences = allReferencesToPage
-	? allReferencesToPage.reduce((acc, { entryId, block }) => {
-			acc[entryId] = acc[entryId] || [];
-			acc[entryId].push(block);
-			return acc;
-		}, {})
+const groupedReferences: Record<string, Block[]> | null = allReferencesToPage
+	? allReferencesToPage.reduce(
+			(acc: Record<string, Block[]>, { entryId, block }) => {
+				acc[entryId] = acc[entryId] || [];
+				acc[entryId].push(block);
+				return acc;
+			},
+			{} as Record<string, Block[]>,
+		)
 	: null;
 
-const entryIdLinksEntry = {};
-const blockIdLinks = {};
+const entryIdLinksEntry: Record<string, [string | null, Post | null]> = {};
+const blockIdLinks: Record<string, string | null> = {};
 
 if (groupedReferences) {
 	for (const entryId of Object.keys(groupedReferences)) {
 		entryIdLinksEntry[entryId] = await getReferenceLink(post.PageId, entryId);
-		for (const block of groupedReferences[entryId]) {
-			const result = await getReferenceLink(post.PageId, entryId, block);
-			blockIdLinks[block.Id] = result[0];
+		const blocks = groupedReferences[entryId];
+		if (blocks) {
+			for (const block of blocks) {
+				const result = await getReferenceLink(post.PageId, entryId, block);
+				blockIdLinks[block.Id] = result[0];
+			}
 		}
 	}
 }
@@ -35,40 +41,43 @@ if (groupedReferences) {
 		<>
 			<div>
 				<span class="font-semibold">Pages That Mention This Page</span>
-				{Object.entries(groupedReferences).map(([entryId, blocks]) => (
-					<div class="ml-2" key={entryId}>
-						<div class="inline-block">
-							<a
-								href={entryIdLinksEntry[entryId][0]}
-								class="webtrotion-page-link p-0.5 font-medium text-link"
-							>
-								{entryIdLinksEntry[entryId][1].Title}
-							</a>
-							{" at "}
-							{REFERENCES && REFERENCES["popovers"] ? (
-								<>
-									{blocks.map((block, index) => (
-										<NBlocksPopover
-											block={block}
-											linkedTo={blockIdLinks[block.Id]}
-											popoverSpanText={`[${index + 1}]`}
-											popoverTitle={entryIdLinksEntry[entryId][1].Title}
-											font={"font-mono"}
-										/>
-									))}
-								</>
-							) : (
-								<>
-									{blocks.map((block, index) => (
-										<a href={blockIdLinks[block.Id]} class="font-mono text-link">
-											{`[${index + 1}]`}
-										</a>
-									))}
-								</>
-							)}
+				{Object.entries(groupedReferences).map(([entryId, blocks]) => {
+					const entryLinks = entryIdLinksEntry[entryId];
+					const entryUrl = entryLinks?.[0] || "#";
+					const entryPost = entryLinks?.[1];
+					const entryTitle = entryPost?.Title || entryId;
+					return (
+						<div class="ml-2">
+							<div class="inline-block">
+								<a href={entryUrl} class="webtrotion-page-link p-0.5 font-medium text-link">
+									{entryTitle}
+								</a>
+								{" at "}
+								{REFERENCES && REFERENCES["popovers"] ? (
+									<>
+										{blocks.map((block, index) => (
+											<NBlocksPopover
+												block={block}
+												linkedTo={blockIdLinks[block.Id] || "#"}
+												popoverSpanText={`[${index + 1}]`}
+												popoverTitle={entryTitle}
+												font={"font-mono"}
+											/>
+										))}
+									</>
+								) : (
+									<>
+										{blocks.map((block, index) => (
+											<a href={blockIdLinks[block.Id] || "#"} class="font-mono text-link">
+												{`[${index + 1}]`}
+											</a>
+										))}
+									</>
+								)}
+							</div>
 						</div>
-					</div>
-				))}
+					);
+				})}
 			</div>
 			<br />
 		</>

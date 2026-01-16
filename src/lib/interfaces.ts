@@ -243,7 +243,7 @@ export interface Column {
 }
 
 export interface List {
-	Type: string;
+	Type: ListType;
 	ListItems: Block[];
 }
 
@@ -313,6 +313,7 @@ export type BlockTypes =
 	| "breadcrumb"
 	| "code"
 	| "bulleted_list_item"
+	| "bulleted_list"
 	| "callout"
 	| "child_database"
 	| "child_page"
@@ -329,6 +330,7 @@ export type BlockTypes =
 	| "link_preview"
 	| "link_to_page"
 	| "numbered_list_item"
+	| "numbered_list"
 	| "paragraph"
 	| "pdf"
 	| "quote"
@@ -338,6 +340,9 @@ export type BlockTypes =
 	| "table_row"
 	| "template"
 	| "to_do"
+	| "to_do_list"
 	| "toggle"
 	| "video"
 	| "audio";
+
+export type ListType = "bulleted_list" | "numbered_list" | "to_do_list";

@@ -11,7 +11,7 @@ const menuLinks = await getMenu();
 const url = new URL(Astro.request.url);
 
 let customIconURL: string = "";
-if (siteInfo.logo && siteInfo.logo.Type === "file") {
+if (siteInfo.logo && siteInfo.logo.Type === "file" && "Url" in siteInfo.logo) {
 	try {
 		customIconURL = filePath(new URL(siteInfo.logo.Url));
 	} catch (err) {
@@ -33,14 +33,14 @@ const rss_path = getNavLink("/rss.xml");
 			aria-current={url.pathname === "/" ? "page" : false}
 		>
 			{
-				siteInfo.logo && siteInfo.logo.Type === "emoji" ? (
+				siteInfo.logo && siteInfo.logo.Type === "emoji" && "Emoji" in siteInfo.logo ? (
 					<>
 						<span class="sm:h-15 sm:w-15 me-3 h-10 w-10 sm:absolute sm:start-[-4.5rem] sm:me-0">
 							{siteInfo.logo.Emoji}
 						</span>
 						<span class="text-xl font-bold sm:text-2xl">{siteInfo.title}</span>
 					</>
-				) : siteInfo.logo && siteInfo.logo.Type === "external" ? (
+				) : siteInfo.logo && siteInfo.logo.Type === "external" && "Url" in siteInfo.logo ? (
 					<>
 						<img
 							class="sm:h-15 sm:w-15 me-3 h-10 w-10 object-contain sm:absolute sm:start-[-4.5rem] sm:me-0"
@@ -119,22 +119,30 @@ const rss_path = getNavLink("/rss.xml");
 	</div>
 </header>
 
-<script>
+<script is:inline>
 	class MobileNavBtn extends HTMLElement {
 		constructor() {
 			super();
 
-			const mobileButtonEl = document.getElementById("toggle-navigation-menu");
-			let menuOpen = false;
+			var mobileButtonEl = document.getElementById("toggle-navigation-menu");
+			var menuOpen = false;
 
 			function toggleMobileMenu() {
-				const headerEl = document.getElementById("main-header")!;
-				headerEl.classList.toggle("menu-open");
-				menuOpen = !menuOpen;
-				mobileButtonEl.setAttribute("aria-expanded", menuOpen.toString());
+				var headerEl = document.getElementById("main-header");
+				if (headerEl) {
+					headerEl.classList.toggle("menu-open");
+					menuOpen = !menuOpen;
+					if (mobileButtonEl) {
+						mobileButtonEl.setAttribute("aria-expanded", menuOpen.toString());
+					}
+				}
 			}
 
-			mobileButtonEl.addEventListener("click", () => toggleMobileMenu());
+			if (mobileButtonEl) {
+				mobileButtonEl.addEventListener("click", function () {
+					toggleMobileMenu();
+				});
+			}
 		}
 	}
 
@@ -147,11 +155,13 @@ const rss_path = getNavLink("/rss.xml");
 			var navMenu = document.getElementById("navigation-menu");
 			var mainHeader = document.getElementById("main-header");
 
+			if (!toggleButton) return;
+
 			// Check if the click is on the toggle button or a descendant of it
 			var isClickInsideToggleButton = toggleButton.contains(event.target);
 
 			if (!isClickInsideToggleButton && event.target instanceof Node) {
-				var isClickInsideNav = navMenu.contains(event.target);
+				var isClickInsideNav = navMenu && navMenu.contains(event.target);
 
 				if (!isClickInsideNav && mainHeader) {
 					// If the click is outside the navMenu and mainHeader exists, remove 'menu-open' attribute

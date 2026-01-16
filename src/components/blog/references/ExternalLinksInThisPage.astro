@@ -7,7 +7,7 @@ import metascraperTitle from "metascraper-title";
 import NBlocksPopover from "./NBlocksPopover.astro";
 import { buildURLToHTMLMap, getReferenceLink } from "@/lib/blog-helpers";
 import { REFERENCES } from "@/constants";
-import Icon from "@/components/Icon.astro";
+import Icon from "@/components/Icon";
 
 interface Props {
 	post: Post;
@@ -15,7 +15,7 @@ interface Props {
 }
 const { post, filteredReferencesInPage } = Astro.props;
 const groupedReferences: { [key: string]: Block[] } = filteredReferencesInPage.reduce(
-	(acc, ref) => {
+	(acc: { [key: string]: Block[] }, ref) => {
 		// Group by direct_nonmedia_link and collect Block objects
 		if (ref.direct_nonmedia_link && !ref.direct_nonmedia_link.includes("tiktok.com")) {
 			const key = ref.direct_nonmedia_link;
@@ -34,12 +34,12 @@ const groupedReferences: { [key: string]: Block[] } = filteredReferencesInPage.r
 
 		return acc;
 	},
-	{},
+	{} as { [key: string]: Block[] },
 );
 
-const blockIdLinks = {};
+const blockIdLinks: Record<string, string | null> = {};
 const urlList: URL[] = [];
-const hrefMetaData = {};
+const hrefMetaData: Record<string, { title?: string; description?: string; image?: string }> = {};
 
 if (groupedReferences) {
 	for (const hrefLink of Object.keys(groupedReferences)) {
@@ -47,9 +47,12 @@ if (groupedReferences) {
 		try {
 			url = new URL(hrefLink);
 			urlList.push(url);
-			for (const block of groupedReferences[hrefLink]) {
-				const result = await getReferenceLink(post.PageId, undefined, block, true);
-				blockIdLinks[block.Id] = result[0];
+			const blocks = groupedReferences[hrefLink];
+			if (blocks) {
+				for (const block of blocks) {
+					const result = await getReferenceLink(post.PageId, undefined, block, true);
+					blockIdLinks[block.Id] = result[0];
+				}
 			}
 		} catch (err) {
 			console.log(err);
@@ -70,17 +73,16 @@ const metascraper = createMetascraper([
 if (groupedReferences && urlMap) {
 	for (const hrefLink of Object.keys(groupedReferences)) {
 		let url: URL;
-		let metadata: Record<string, string>;
 		try {
 			url = new URL(hrefLink);
 			const html = urlMap[hrefLink];
 			if (html) {
-				metadata = await metascraper({ html, url });
-				if (!metadata || (metadata && !metadata.title)) {
+				const metadata = await metascraper({ html, url: url.toString() });
+				if (!metadata || !metadata.title) {
 					delete groupedReferences[hrefLink];
 					continue;
 				} else {
-					hrefMetaData[hrefLink] = metadata;
+					hrefMetaData[hrefLink] = metadata as { title?: string; description?: string; image?: string };
 				}
 			} else {
 				delete groupedReferences[hrefLink];
@@ -115,41 +117,43 @@ if (groupedReferences && urlMap) {
 					</div>
 				</summary>
 				<div class="pl-2">
-					{Object.entries(groupedReferences).map(([hrefLink, blocks]) => (
-						<div key={hrefLink}>
-							<div class="inline-block">
-								<a
-									href={hrefLink}
-									class="text-link no-underline hover:underline hover:decoration-accent-2 hover:underline-offset-4"
-								>
-									{hrefMetaData[hrefLink].title.length > 35
-										? `${hrefMetaData[hrefLink].title.slice(0, 35)}…`
-										: hrefMetaData[hrefLink].title}
-								</a>
-								{" at "}
-								{REFERENCES && REFERENCES["popovers"] ? (
-									<>
-										{blocks.map((block, index) => (
-											<NBlocksPopover
-												block={block}
-												linkedTo={blockIdLinks[block.Id]}
-												popoverSpanText={`[${index + 1}]`}
-												font={"font-mono"}
-											/>
-										))}
-									</>
-								) : (
-									<>
-										{blocks.map((block, index) => (
-											<a href={blockIdLinks[block.Id]} class="font-mono text-link">
-												{`[${index + 1}]`}
-											</a>
-										))}
-									</>
-								)}
+					{Object.entries(groupedReferences).map(([hrefLink, blocks]) => {
+						const metaData = hrefMetaData[hrefLink];
+						const title = metaData?.title || hrefLink;
+						return (
+							<div>
+								<div class="inline-block">
+									<a
+										href={hrefLink}
+										class="text-link no-underline hover:underline hover:decoration-accent-2 hover:underline-offset-4"
+									>
+										{title.length > 35 ? `${title.slice(0, 35)}…` : title}
+									</a>
+									{" at "}
+									{REFERENCES && REFERENCES["popovers"] ? (
+										<>
+											{blocks.map((block, index) => (
+												<NBlocksPopover
+													block={block}
+													linkedTo={blockIdLinks[block.Id] || "#"}
+													popoverSpanText={`[${index + 1}]`}
+													font={"font-mono"}
+												/>
+											))}
+										</>
+									) : (
+										<>
+											{blocks.map((block, index) => (
+												<a href={blockIdLinks[block.Id] || "#"} class="font-mono text-link">
+													{`[${index + 1}]`}
+												</a>
+											))}
+										</>
+									)}
+								</div>
 							</div>
-						</div>
-					))}
+						);
+					})}
 				</div>
 			</details>
 			<br />
